@@ -1,0 +1,171 @@
+<!doctype html>
+<html>
+<head>
+   <style>
+      #gameTitle {
+         font-size: 80px;
+         color: green;
+         text-align: center;
+         margin-top: 2px;
+      }
+      body {
+         background-color: lightblue;
+      }
+      #image {
+         text-align: center;
+      }
+      #guessDiv {
+         text-align: center;
+      }
+      #showWord {
+         font-size: 80px;
+         color: yellow;
+         text-align: center;
+      }
+      #secretWord {
+         font-size: 80px;
+         color: coral;
+         text-align: center;
+      }
+      #rongLetters {
+         font-size: 40px;
+         text-align: center;
+         color: red;
+      }
+      #guess {
+         height: 20px;
+         width: auto;
+      }
+      #button {
+         height: 25px;
+         width: auto;
+      }
+   </style>
+<script type="text/javascript">
+   
+   function btnClik_onclick(e) {
+      if(e.which == 'click' || e.which == 13) {
+         var letter = document.getElementById("guess").value;
+         var valid = isValid(letter);
+         if(valid) {
+            var strAddr = window.location.href;  
+            var varsToSet = ["rite", rite, "rong", rong];
+            param = setVar(strAddr, varsToSet);
+            window.location.href = param;
+         }
+      }
+   }
+   
+   function showImage(num=0) {
+      var imageName = "H" + num.toString() + ".GIF";
+      document.getElementById("image").innerHTML = "<img src=\"" + imageName + "\">";
+   }
+   
+   function setVar(addr, key) {
+      tmp = window.location.pathname + "?" + key[0] + "=" + key[1] + "&" + key[2] + "=" + key[3];
+      return tmp;
+   }
+   
+   function isValid(letter) { 
+      letter = letter.trim();
+      letter = letter.charAt(0).toLowerCase();
+      var letterChar = letter.charCodeAt(0);
+      if(letterChar >= 97 && letterChar <= 122) {
+         if(rite.includes(letter) || rong.includes(letter)) {
+            alert("You have already guessed this letter");
+         }
+         else {
+            if(seekrit.includes(letter)) {
+               rite += letter;
+            }
+            else{
+               rong += letter;
+               if(rong.length >= 14) {
+                  alert("You lose");
+               }
+            }
+         }
+         return true;
+      }
+      else {
+         alert("Please enter a valid letter");
+         return false;
+      }
+   }
+   
+   function wordBlendr(wrd1, wrd2='') {
+      var pos;
+      var ary = new Array();
+      var len2 = wrd2.length; 
+      var len1 = wrd1.length;
+      shownWord = '';
+      ary.length = len1;
+      for (var i = 0; i < len1; i++) {     
+         ary[i] = "*";
+      }
+      for (var j = 0; j < len2; j++) {     
+         var char = wrd2.charAt(j);   
+         pos = wrd1.indexOf(char);  
+         while (pos != -1) {
+            ary[pos] = char;
+            pos = wrd1.indexOf(char, pos+1);  
+         }
+      }
+
+      for (var k = 0; k < len1; k++)  { 
+         shownWord += ary[k].toUpperCase();
+         shownWord += ' ';
+      }
+      if(!ary.includes("*")) {
+         alert("Congratulation, you win!")
+      }
+      document.getElementById("showWord").innerHTML = shownWord;
+   }
+   
+   function getVar(variable) {
+      var query = window.location.search.substring(1);
+      var vars = query.split("&");
+      for(var i = 0; i < vars.length; i++) {
+         var pair = vars[i].split("=");
+         if(pair[0] == variable) {
+            return pair[1];
+         }
+      }
+      return '';
+   }
+</script>
+</head>
+<body>
+   <p id="gameTitle">H A N G M A N</p>
+   <div id="image"></div>
+   <p id="rongLetters">Wrong Guesses: <span id="wrongLetters"></span></p>
+   <div id="guessDiv">
+      <input type="text" id="guess" onKeyDown="btnClik_onclick(event)">
+      <button id="button" type="button" onclick="btnClik_onclick('click')">Guess</button>
+   </div>
+   <div class="clear"></div>
+   <p id="secretWord">Secret Word: <span id="showWord"></span></p>
+
+<script type="text/javascript">
+   var seekrit = "mamalita";
+   var shownWord = '';
+   var rite = '';
+   var rong = '';
+   var strAddr, pos;
+   
+   strAddr = window.location.href;      
+   rite = getVar("rite");
+   if(rite == undefined) {
+      rite = '';
+   }
+   rong = getVar("rong");
+   if(rong == undefined) {
+      rong = '';
+   }
+   document.getElementById("wrongLetters").innerHTML = rong.toUpperCase();
+   showImage(rong.length);
+   wordBlendr(seekrit, rite);
+</script>
+  
+</body>
+</html>
